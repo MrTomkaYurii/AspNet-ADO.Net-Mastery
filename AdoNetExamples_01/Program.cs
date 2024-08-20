@@ -13,8 +13,7 @@ internal class Program
          .Build();
 
         string server_connectionString = configuration.GetConnectionString("MsSqlConnectionString") ?? "DefaultConnectionString";
-        string databaseName = "LibraryDemo";
-
+        string databaseName = "Library-ADO-NET-Demo";
 
         #region Connection Info
         Console.WriteLine("============================================");
@@ -44,9 +43,15 @@ internal class Program
             await command.ExecuteNonQueryAsync();
         }
 
-        string db_connectionString = $"Server=.;Database={databaseName};Integrated Security=True;";
+            //creating database connection string
+            var builder = new SqlConnectionStringBuilder(server_connectionString)
+            {
+                InitialCatalog = databaseName
+            };
+            string database_conectionstring = builder.ToString();
 
-        using (SqlConnection db_connection = new(db_connectionString))
+
+        using (SqlConnection db_connection = new(database_conectionstring))
         {
             await db_connection.OpenAsync();
             SqlCommand command = new();
@@ -60,7 +65,7 @@ internal class Program
             Console.WriteLine("TABLE Books is created!");
         }
 
-        using (SqlConnection db_connection = new(server_connectionString))
+        using (SqlConnection db_connection = new(database_conectionstring))
         {
             await db_connection.OpenAsync();
             SqlCommand command = new(
@@ -72,7 +77,7 @@ internal class Program
             Console.WriteLine($"Added objects count: {number}");
         }
 
-        using (SqlConnection db_connection = new(server_connectionString))
+        using (SqlConnection db_connection = new(database_conectionstring))
         {
             await db_connection.OpenAsync();
             SqlCommand command = new(@"UPDATE Books SET PageCount=120 WHERE Title='1984'", db_connection);
@@ -80,7 +85,7 @@ internal class Program
             Console.WriteLine($"Updated objects count: {number}");
         }
 
-        using (SqlConnection db_connection = new(server_connectionString))
+        using (SqlConnection db_connection = new(database_conectionstring))
         {
             await db_connection.OpenAsync();
             SqlCommand command = new(@"DELETE FROM Books WHERE Title='1984'", db_connection);
@@ -92,7 +97,7 @@ internal class Program
 
         #region Read Data
         Console.WriteLine("============================================");
-        using (SqlConnection connection = new(server_connectionString))
+        using (SqlConnection connection = new(database_conectionstring))
         {
             await connection.OpenAsync();
 
@@ -101,27 +106,28 @@ internal class Program
             {
                 if (reader.HasRows)
                 {
+                    int columnWidth = 20;
                     string columnName1 = reader.GetName(0);
                     string columnName2 = reader.GetName(1);
                     string columnName3 = reader.GetName(2);
                     string columnName4 = reader.GetName(3);
 
-                    Console.WriteLine($"{columnName1}\t{columnName2}\t{columnName3}\t{columnName4}");
+                    Console.WriteLine($"{columnName1.PadRight(columnWidth)} \t{columnName2.PadRight(columnWidth)} \t{columnName3.PadRight(columnWidth)} \t{columnName4.PadRight(columnWidth)} ");
 
                     while (await reader.ReadAsync())
                     {
                         int id = reader.GetInt32(0);
-                        string title = reader.GetString(2);
-                        string author = reader.GetString(1);
+                        string title = reader.GetString(1);
+                        string author = reader.GetString(2);
                         int pageCount = reader.GetInt32(3);
 
-                        Console.WriteLine($"{id} \t{title} \t{author} \t{pageCount}");
+                        Console.WriteLine($"{id.ToString().PadRight(columnWidth)} \t{title.PadRight(columnWidth)} \t{author.PadRight(columnWidth)} \t{pageCount.ToString().PadRight(columnWidth)}");
                     }
                 }
             }
         }
 
-        using (SqlConnection connection = new(server_connectionString))
+        using (SqlConnection connection = new(database_conectionstring))
         {
             await connection.OpenAsync();
 
@@ -140,7 +146,7 @@ internal class Program
         #region Parameterized Queries
         Console.WriteLine("============================================");
         string sqlExpression = "INSERT INTO Books (Title, Author, PageCount) VALUES (@title, @author, @pageCount);SET @id=SCOPE_IDENTITY()";
-        using (SqlConnection connection = new(server_connectionString))
+        using (SqlConnection connection = new(database_conectionstring))
         {
             await connection.OpenAsync();
 
@@ -172,7 +178,7 @@ internal class Program
 
         #region Transactions
         Console.WriteLine("============================================");
-        using (SqlConnection connection = new(server_connectionString))
+        using (SqlConnection connection = new(database_conectionstring))
         {
             await connection.OpenAsync();
             SqlTransaction transaction = connection.BeginTransaction();
@@ -200,19 +206,3 @@ internal class Program
         Console.Read();
     }
 }
-
-#region Connection Info
-
-#endregion
-#region Create / Update / Delete Data
-
-#endregion
-#region Read Data
-
-#endregion
-#region Parameterized Queries
-
-#endregion
-#region Transactions
-
-#endregion
