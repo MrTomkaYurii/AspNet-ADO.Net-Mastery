@@ -1,4 +1,0 @@
-// {type:class}
-// {direction:leftToRight}
-// https://yuml.me/diagram/scruffy/class/draw
-[User|Id;FirstName;LastName;EmailAddress;Tags]<>-0..*[Tag|Name]

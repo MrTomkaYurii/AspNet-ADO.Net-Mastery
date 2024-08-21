@@ -13,7 +13,7 @@ internal class Program
          .Build();
 
         string server_connectionString = configuration.GetConnectionString("MsSqlConnectionString") ?? "DefaultConnectionString";
-        string databaseName = "Library-ADO-NET-Demo";
+        string databaseName = "LibraryAdoNetDemo";
 
         #region Connection Info
         Console.WriteLine("============================================");
