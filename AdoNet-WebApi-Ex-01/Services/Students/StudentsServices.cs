@@ -3,9 +3,9 @@ using Microsoft.Data.SqlClient;
 
 public class StudentsService
 {
-    private readonly DataAccessService _dataAccessService;
+    private readonly DataAccessRepository _dataAccessService;
 
-    public StudentsService(DataAccessService dataAccessService)
+    public StudentsService(DataAccessRepository dataAccessService)
     {
         _dataAccessService = dataAccessService;
     }

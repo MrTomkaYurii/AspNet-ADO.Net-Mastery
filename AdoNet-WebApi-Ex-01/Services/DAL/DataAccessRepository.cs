@@ -2,7 +2,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using LearnAdoDotnet.Settings;
 
-public class DataAccessService : IDisposable
+public class DataAccessRepository : IDisposable
 {
     private readonly string? _connectionString;
     private readonly SqlConnection _sqlConnection;
@@ -17,7 +17,7 @@ public class DataAccessService : IDisposable
     // }
 
     // Better (preferred)
-    public DataAccessService(ConnectionStrings connectionStrings)
+    public DataAccessRepository(ConnectionStrings connectionStrings)
     {
         _connectionString = connectionStrings.DefaultConnection;
         _sqlConnection = new SqlConnection(_connectionString);

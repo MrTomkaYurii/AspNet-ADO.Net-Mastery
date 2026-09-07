@@ -23,7 +23,7 @@ var ConnectionStrings = new ConnectionStrings();
 
 builder.Configuration.Bind(nameof(ConnectionStrings), ConnectionStrings);
 builder.Services.AddSingleton(ConnectionStrings);
-builder.Services.AddTransient<DataAccessService>();
+builder.Services.AddTransient<DataAccessRepository>();
 builder.Services.AddTransient<StudentsService>();
 
 var app = builder.Build();
