@@ -1,0 +1,31 @@
+@host = http://localhost:5281
+
+### Список студентів (сторінка 1, 10 на сторінку)
+GET {{host}}/Students?page=1&count=10
+
+### Кількість студентів (Dapper ExecuteScalarAsync<int> -> SELECT COUNT(*))
+GET {{host}}/Students/Count
+
+### Один студент за Id
+GET {{host}}/Students/1
+
+### Додати студента
+POST {{host}}/Students/AddStudent
+Content-Type: application/json
+
+{
+  "name": "Ivan Franko",
+  "email": "ivan.franko@email.com"
+}
+
+### Додати студента з некоректними даними -> 400
+POST {{host}}/Students/AddStudent
+Content-Type: application/json
+
+{
+  "name": "",
+  "email": "no-at-sign"
+}
+
+### Видалити студента за Id
+DELETE {{host}}/Students/DeleteStudents/1

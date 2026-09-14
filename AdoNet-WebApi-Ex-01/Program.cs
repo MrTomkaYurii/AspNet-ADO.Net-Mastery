@@ -1,13 +1,17 @@
 using LearnAdoDotnet.Settings;
 using Microsoft.OpenApi.Models;
 
+// Точка входу застосунку. WebApplicationBuilder збирає конфігурацію,
+// DI-контейнер (реєстр сервісів) та налаштування хостингу.
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// --- Реєстрація сервісів у DI-контейнері ---
 
+// Додаємо підтримку контролерів (атрибутна маршрутизація, модель-байндинг тощо).
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Swagger/OpenAPI — автоматична документація та тестова UI-сторінка для API.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -19,27 +23,40 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// Створюємо об'єкт налаштувань і заповнюємо його значеннями із секції
+// "ConnectionStrings" файлу appsettings.json (nameof(ConnectionStrings) == "ConnectionStrings").
 var ConnectionStrings = new ConnectionStrings();
 
 builder.Configuration.Bind(nameof(ConnectionStrings), ConnectionStrings);
+
+// Singleton — один екземпляр налаштувань на весь час роботи застосунку.
 builder.Services.AddSingleton(ConnectionStrings);
+
+// Transient — новий екземпляр створюється щоразу, коли його запитують.
+// Репозиторій доступу до даних (ADO.NET) та сервіс бізнес-логіки для студентів.
 builder.Services.AddTransient<DataAccessRepository>();
 builder.Services.AddTransient<StudentsService>();
 
+// Будуємо застосунок після того, як усі сервіси зареєстровані.
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- Налаштування конвеєра обробки HTTP-запитів (middleware) ---
+// Порядок виклику middleware важливий: запит проходить їх зверху вниз.
 if (app.Environment.IsDevelopment())
 {
+    // У режимі розробки вмикаємо Swagger, щоб зручно тестувати ендпойнти.
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 else
 {
+    // У продакшені перенаправляємо HTTP -> HTTPS і вмикаємо авторизацію.
     app.UseHttpsRedirection();
     app.UseAuthorization();
 }
 
+// Зіставляємо маршрути з методами контролерів.
 app.MapControllers();
 
+// Запускаємо веб-сервер і блокуємо потік до зупинки застосунку.
 app.Run();

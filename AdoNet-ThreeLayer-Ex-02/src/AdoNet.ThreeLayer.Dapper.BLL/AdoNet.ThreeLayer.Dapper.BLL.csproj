@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- ШАР 2: BLL (Business Logic Layer) — бізнес-логіка.
+       Знає про правила застосунку: перевірка вхідних даних, підрахунок сторінок,
+       перетворення сутностей DAL у DTO. Посилається лише на DAL, не знає ні про HTTP,
+       ні про те, що DAL усередині використовує Dapper, а не "чистий" ADO.NET. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AdoNet.ThreeLayer.Dapper.DAL\AdoNet.ThreeLayer.Dapper.DAL.csproj" />
+  </ItemGroup>
+
+</Project>

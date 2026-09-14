@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- ШАР 3: API — веб-інтерфейс.
+       Знає лише про HTTP: маршрути, коди відповідей, серіалізацію JSON, Swagger.
+       Уся робота делегується у BLL. Це також "точка збірки" (composition root):
+       саме тут через DI з'єднуються всі три шари. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AdoNet.ThreeLayer.Dapper.BLL\AdoNet.ThreeLayer.Dapper.BLL.csproj" />
+    <ProjectReference Include="..\AdoNet.ThreeLayer.Dapper.DAL\AdoNet.ThreeLayer.Dapper.DAL.csproj" />
+  </ItemGroup>
+
+</Project>

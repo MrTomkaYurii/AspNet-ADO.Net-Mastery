@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- ШАР 1: DAL (Data Access Layer) — доступ до даних.
+       На відміну від AdoNet-ThreeLayer-Ex-01, тут поверх Microsoft.Data.SqlClient
+       (ADO.NET) додано Dapper — мікро-ORM, що працює як набір extension-методів
+       над IDbConnection. Dapper НЕ замінює ADO.NET: з'єднання все одно SqlConnection,
+       Dapper лише прибирає ручне створення SqlCommand/SqlDataReader та мапінг рядків. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.86" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
+  </ItemGroup>
+
+</Project>
