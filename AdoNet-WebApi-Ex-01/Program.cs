@@ -1,5 +1,5 @@
 using LearnAdoDotnet.Settings;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 // Точка входу застосунку. WebApplicationBuilder збирає конфігурацію,
 // DI-контейнер (реєстр сервісів) та налаштування хостингу.
@@ -21,6 +21,13 @@ builder.Services.AddSwaggerGen(options =>
         Title = "API",
         Description = "Web API",
     });
+
+    var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
 });
 
 // Створюємо об'єкт налаштувань і заповнюємо його значеннями із секції
@@ -54,6 +61,9 @@ else
     app.UseHttpsRedirection();
     app.UseAuthorization();
 }
+
+// Редирект з кореневого маршруту на Swagger UI
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 // Зіставляємо маршрути з методами контролерів.
 app.MapControllers();

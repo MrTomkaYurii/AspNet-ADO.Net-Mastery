@@ -9,6 +9,13 @@ namespace AdoNet.ThreeLayer.Dapper.Api.Controllers;
 /// Маршрути та поведінка повторюють AdoNet-ThreeLayer-Ex-01 — різниця лише
 /// в тому, чим DAL звертається до бази (Dapper замість "чистого" ADO.NET).
 /// </summary>
+/// <remarks>
+/// <b>Архітектурна відповідальність контролера:</b>
+/// Контролер не містить бізнес-логіки та не знає про існування бази даних.
+/// Його зона відповідальності — маршрутизація, прийом HTTP заголовків/тіла,
+/// первинна валідація запиту та мапінг результатів у стандартизовані HTTP-статуси:
+/// 200 OK, 201 Created, 400 Bad Request, 404 Not Found.
+/// </remarks>
 [ApiController]
 [Route("Students")]
 public sealed class StudentsController : ControllerBase
@@ -20,8 +27,14 @@ public sealed class StudentsController : ControllerBase
         _service = service;
     }
 
-    // GET /Students?page=1&count=10
+    /// <summary>Отримує пагінований список студентів.</summary>
+    /// <param name="page">Номер сторінки (починаючи з 1).</param>
+    /// <param name="count">Кількість елементів на сторінці.</param>
+    /// <response code="200">Успішне отримання сторінки студентів.</response>
+    /// <response code="400">Некоректні параметри пагінації.</response>
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<StudentDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<StudentDto>>> GetStudents(int page = 1, int count = 10)
     {
         if (page <= 0 || count <= 0)
@@ -32,23 +45,35 @@ public sealed class StudentsController : ControllerBase
         return Ok(await _service.GetStudentsAsync(page, count));
     }
 
-    // GET /Students/Count
+    /// <summary>Отримує загальну кількість зареєстрованих студентів.</summary>
+    /// <response code="200">Загальне число студентів.</response>
     [HttpGet("Count")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     public async Task<ActionResult<int>> GetStudentsCount()
     {
         return Ok(await _service.GetStudentsCountAsync());
     }
 
-    // GET /Students/5
+    /// <summary>Отримує профіль студента за його унікальним ідентифікатором.</summary>
+    /// <param name="id">Ідентифікатор студента.</param>
+    /// <response code="200">Студента знайдено.</response>
+    /// <response code="404">Студента з вказаним Id не існує.</response>
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(StudentDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<StudentDto>> GetStudent(int id)
     {
         var student = await _service.GetStudentAsync(id);
         return student is null ? NotFound() : Ok(student);
     }
 
-    // POST /Students/AddStudent
+    /// <summary>Реєструє нового студента в системі.</summary>
+    /// <param name="student">Дані нового студента (ім'я та email).</param>
+    /// <response code="201">Студента успішно створено.</response>
+    /// <response code="400">Помилка валідації бізнес-правил (порожнє ім'я, некоректний email).</response>
     [HttpPost("AddStudent")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddStudent([FromBody] CreateStudentDto student)
     {
         try
@@ -63,8 +88,13 @@ public sealed class StudentsController : ControllerBase
         }
     }
 
-    // DELETE /Students/DeleteStudents/5
+    /// <summary>Видаляє студента за його ідентифікатором.</summary>
+    /// <param name="id">Ідентифікатор студента.</param>
+    /// <response code="200">Студента успішно видалено.</response>
+    /// <response code="404">Студента для видалення не знайдено.</response>
     [HttpDelete("DeleteStudents/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteStudent(int id)
     {
         bool deleted = await _service.DeleteStudentAsync(id);

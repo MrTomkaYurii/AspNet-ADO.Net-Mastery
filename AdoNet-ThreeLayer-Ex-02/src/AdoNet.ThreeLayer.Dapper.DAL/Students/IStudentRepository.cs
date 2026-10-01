@@ -7,6 +7,17 @@ namespace AdoNet.ThreeLayer.Dapper.DAL.Students;
 /// Сигнатури методів навмисно ідентичні AdoNet-ThreeLayer-Ex-01, щоб було видно:
 /// міняється лише реалізація (DAL), контракт і решта шарів — ні.
 /// </summary>
+/// <remarks>
+/// <b>Архітектурна роль (DIP / Repository Pattern):</b>
+/// Інтерфейс реалізує принцип інверсії залежностей (SOLID Dependency Inversion Principle).
+/// Шар бізнес-логіки (BLL) залежить від абстракції <see cref="IStudentRepository"/>,
+/// а не від бібліотеки Dapper або конкретної СУБД. Це дозволяє безболісно замінювати
+/// рівень збереження (Dapper, чистий ADO.NET, EF Core або InMemory Mock для unit-тестів)
+/// без внесення змін до бізнес-правил.
+/// 
+/// Усі методи підтримують асинхронність із передачею <see cref="CancellationToken"/>
+/// для своєчасного переривання SQL-запитів і запобігання блокуванню пулу з'єднань.
+/// </remarks>
 public interface IStudentRepository
 {
     /// <summary>Повертає сторінку студентів (SELECT ... OFFSET/FETCH).</summary>

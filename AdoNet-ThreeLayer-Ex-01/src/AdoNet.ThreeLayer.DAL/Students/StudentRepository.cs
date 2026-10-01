@@ -7,6 +7,19 @@ namespace AdoNet.ThreeLayer.DAL.Students;
 /// Тут і тільки тут програма знає про SqlConnection, SqlCommand, SqlDataReader і текст SQL.
 /// Запити взяті з базового прикладу AdoNet-WebApi-Ex-01.
 /// </summary>
+/// <remarks>
+/// <b>Архітектурні особливості низькорівневої реалізації:</b>
+/// 1. <b>Ручний мапінг (Manual Hydration):</b>
+///    Кожен стовпець читається вручну через <see cref="SqlDataReader.GetOrdinal"/> та типізовані
+///    методи <c>GetInt32</c>, <c>GetString</c>. Це еталон швидкості читання, але вимагає багато
+///    шаблонного коду, схильного до помилок при зміні схеми.
+/// 2. <b>Керування ресурсами:</b>
+///    Всі ресурси (<see cref="SqlConnection"/>, <see cref="SqlCommand"/>, <see cref="SqlDataReader"/>)
+///    огортаються у <c>await using</c>, гарантуючи своєчасний виклик <c>DisposeAsync</c> і повернення
+///    з'єднання в пул навіть у разі виникнення винятку в базі.
+/// 3. <b>Параметризація:</b>
+///    Використовується колекція <c>command.Parameters</c>, що унеможливлює ін'єкцію SQL.
+/// </remarks>
 public sealed class StudentRepository : IStudentRepository
 {
     private readonly string _connectionString;

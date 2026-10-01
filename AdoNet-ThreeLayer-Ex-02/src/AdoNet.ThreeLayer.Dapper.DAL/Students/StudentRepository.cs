@@ -15,6 +15,21 @@ namespace AdoNet.ThreeLayer.Dapper.DAL.Students;
 /// SQL той самий, але там — ручний SqlCommand + SqlDataReader + метод Map(),
 /// тут — один виклик Dapper-методу з анонімним об'єктом параметрів.
 /// </summary>
+/// <remarks>
+/// <b>Архітектурні особливості реалізації:</b>
+/// 1. <b>Керування з'єднаннями та пулінг (Connection Pooling):</b>
+///    Підключення створюється локально у кожному методі через <c>await using SqlConnection</c>.
+///    Завдяки вбудованому пулу ADO.NET створення об'єкта та його відкриття (<c>OpenAsync</c>)
+///    займає частки мілісекунди. Після завершення блоку з'єднання негайно повертається в пул,
+///    запобігаючи вичерпанню сокетів (Connection Leaks).
+/// 2. <b>IL Emit Десеріалізація:</b>
+///    Під час першого виклику Dapper аналізує метадані з'єднання та схему колонок, компілюючи
+///    IL-байткод через <see cref="System.Reflection.Emit.DynamicMethod"/>. Наступні виклики
+///    працюють зі швидкістю оптимізованого ручного коду C#.
+/// 3. <b>Асинхронність та CancellationToken:</b>
+///    Використання структури <see cref="CommandDefinition"/> гарантує, що при скасуванні HTTP-запиту
+///    клієнтом запит на SQL Server також переривається, заощаджуючи ресурси процесора та I/O.
+/// </remarks>
 public sealed class StudentRepository : IStudentRepository
 {
     private readonly string _connectionString;

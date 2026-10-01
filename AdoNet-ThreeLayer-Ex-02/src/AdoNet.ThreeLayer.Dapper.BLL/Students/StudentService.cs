@@ -9,6 +9,17 @@ namespace AdoNet.ThreeLayer.Dapper.BLL.Students;
 /// Доступ до бази виконує через <see cref="IStudentRepository"/> — сам сервіс
 /// не знає, що всередині репозиторій використовує Dapper, а не "чистий" ADO.NET.
 /// </summary>
+/// <remarks>
+/// <b>Архітектурні принципи рівня BLL:</b>
+/// 1. <b>Чистота бізнес-логіки (Agnostic to persistence):</b>
+///    Шар BLL не має жодного Nuget-посилання на Dapper, Entity Framework чи Microsoft.Data.SqlClient.
+///    Це гарантує, що зміна СУБД або технології доступу не вплине на правила валідації.
+/// 2. <b>Інкапсуляція моделі даних (Information Hiding):</b>
+///    Сутності рівня DAL (<see cref="Student"/>) не виходять за межі BLL — вони перетворюються
+///    на незмінні DTO (<see cref="StudentDto"/>) перед передачею в шар контролерів.
+/// 3. <b>Захист інваріантів:</b>
+///    Усі вхідні контракти валідуються до виконання I/O операцій, заощаджуючи ресурси бази даних.
+/// </remarks>
 public sealed class StudentService : IStudentService
 {
     private readonly IStudentRepository _repository;
