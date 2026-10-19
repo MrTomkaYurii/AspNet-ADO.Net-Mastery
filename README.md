@@ -170,7 +170,7 @@ flowchart LR
 
 ### 1. Перевірка чистоти збірки (.NET 10)
 ```bash
-dotnet build AspNet-ADO.Net-Examples.sln
+dotnet build AspNet-ADO.Net-Mastery.sln
 ```
 *Результат:* **`0 Warning(s), 0 Error(s)`**.
 
